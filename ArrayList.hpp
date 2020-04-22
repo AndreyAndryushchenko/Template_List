@@ -16,8 +16,15 @@ public:
     ArrayList(int capacity) : capacity_(capacity), length_(-1), size_(0) {
         array_ = new T[capacity];
     }
-    ArrayList(const ArrayList& arr);
-    ArrayList& operator = (const ArrayList& arr);
+    ArrayList(const ArrayList& arr) {
+        capacity_ = arr.capacity_;
+        size_ = arr.size_;
+        length_ = arr.length_;
+        array_ = new T[capacity_];
+        for (int i = 0; i<arr.size; i++) {
+            array_[i] = arr.array_[i];
+        }
+    }
     void append(T value);
     void prepend(T value);
     void AppendAll(const ArrayList& arr);
