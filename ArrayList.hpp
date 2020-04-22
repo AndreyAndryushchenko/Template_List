@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cassert>
-#include <stdexcept>
 #include <iostream>
 
 template <class T>
@@ -30,7 +29,7 @@ private:
         array_ = arr;
     }
 public:
-    ArrayList(int capacity = 0) : capacity_(capacity), length_(-1), size_(0) {
+    explicit ArrayList(int capacity = 0) : capacity_(capacity), length_(-1), size_(0) {
         if (capacity == 0) {
             array_ = nullptr;
         } else {
@@ -93,7 +92,11 @@ public:
         }
         array_[0] = value;
     }
-    void AppendAll(const ArrayList& arr);
+    void AppendAll(const ArrayList& arr) {
+        for (int i = 0; i < arr.size_; i++) {
+            append(arr.array_[i]);
+        }
+    }
     void InsertAt(int index, T value) {
         assert(index >= 0 && index < size_);
         size_++;
@@ -125,8 +128,31 @@ public:
         delete [] array_;
         array_ = nullptr;
     }
-    T Pop();
-    T Dequeue();
+    T Pop() {
+        assert(size_ > 0);
+        size_--;
+        length_--;
+        if (capacity_ / size_ == 4) {
+            MicroMemory();
+        }
+        auto a = array_[size_];
+        array_[size_] = 0;
+        return a;
+    }
+    T Dequeue() {
+        assert(size_ > 0);
+        size_--;
+        length_--;
+        if (capacity_ / size_ == 4) {
+            MicroMemory();
+        }
+        auto a = array_[0];
+        for (int i=0; i<size_; i++) {
+            array_[i]=array_[i+1];
+        }
+        array_[size_] = 0;
+        return a;
+    }
     int Length();
     T& operator[](int index) {
         assert(index >= 0 && index < size_);
@@ -136,12 +162,6 @@ public:
         std::cout << "ArrayList" << std::endl;
         delete [] array_;
     }
-//    void PrintList() {
-//        for (int i = 0; i < size_; i++) {
-//            std::cout << array_[i] << " ";
-//        }
-//        std::cout << std::endl;
-//    }
 };
 
 template<class T>
