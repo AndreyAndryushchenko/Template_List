@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cassert>
+#include <stdexcept>
+#include <iostream>
 
 template <class T>
 class ArrayList {
@@ -44,11 +46,58 @@ public:
             array_[i] = arr.array_[i];
         }
     }
-    void append(T value);
-    void prepend(T value);
+    void append(T value) {
+        size_++;
+        length_++;
+        if (capacity_ == 0) {
+            capacity_ =2;
+            array_ = new T[capacity_];
+        }
+        if (size_ == capacity_) {
+            MacroMemory();
+        }
+        array_[length_] = value;
+    }
+    void prepend(T value) {
+        size_++;
+        length_++;
+        if (capacity_ == 0) {
+            capacity_ =2;
+            array_ = new T[capacity_];
+        }
+        if (size_ == capacity_) {
+            MacroMemory();
+        }
+        for (int i = length_; i > 0; i--) {
+            array_[i] = array_[i-1];
+        }
+        array_[0] = value;
+    }
     void AppendAll(const ArrayList& arr);
-    void InsertAt(int index, T value);
-    void RemoveAt(int index);
+    void InsertAt(int index, T value) {
+        assert(index >= 0 && index < size_);
+        size_++;
+        length_++;
+        if (size_ == capacity_) {
+            MacroMemory();
+        }
+        for (int i = length_; i > index+1; i--) {
+            array_[i] = array_[i-1];
+        }
+        array_[index+1] = value;
+    }
+    void RemoveAt(int index) {
+        assert(size_ != 0);
+        size_--;
+        length_--;
+        if (capacity_ / size_ == 4) {
+            MicroMemory();
+        }
+        for (int i = index; i < size_; i++) {
+            array_[i] = array_[i+1];
+        }
+        array_[length_+1] = (T)0;
+    }
     void RemoveAll() {
         capacity_ = 0;
         size_ = 0;
@@ -56,11 +105,25 @@ public:
         delete [] array_;
         array_ = nullptr;
     }
-    int Pop();
-    int Dequeue();
+    T Pop();
+    T Dequeue();
     int Length();
-    int GetAt(int index);
+    T& operator[](int index) {
+        assert(index >= 0 && index < size_);
+        return array_[index];
+    }
     ~ArrayList() {
+        std::cout << "ArrayList" << std::endl;
         delete [] array_;
     }
 };
+
+template<class T>
+int ArrayList<T>::Length() {
+    return size_;
+}
+
+// Нужно ли удалять конструктор перемещения и оператор присвоения перемещением?
+// Как сделать заполняющий конструктор под шаблонный тип?
+// Нужно ли указывать в методах значения по умолчанию в случае которых будем выбрасывать исключение?
+// Какой тип нам необходимо передавать в методы, добавляющие элементы?
