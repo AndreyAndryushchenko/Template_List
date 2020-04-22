@@ -9,12 +9,31 @@ private:
     int size_;
     int length_;
     T* array_;
-public:
-    ArrayList() : capacity_(0), length_(-1), size_(0) {
-        array_ = nullptr;
+    void MacroMemory() {
+        capacity_ *= 2;
+        auto arr = new T[capacity_];
+        for (int i = 0; i < size_; i++) {
+            arr[i] = array_[i];
+        }
+        delete [] array_;
+        array_ = arr;
     }
-    ArrayList(int capacity) : capacity_(capacity), length_(-1), size_(0) {
-        array_ = new T[capacity];
+    void MicroMemory() {
+        capacity_ /= 2;
+        auto arr = new T[capacity_];
+        for (int i = 0; i < size_+1; i++) {
+            arr[i] = array_[i];
+        }
+        delete [] array_;
+        array_ = arr;
+    }
+public:
+    ArrayList(int capacity = 0) : capacity_(capacity), length_(-1), size_(0) {
+        if (capacity == 0) {
+            array_ = nullptr;
+        } else {
+            array_ = new T[capacity];
+        }
     }
     ArrayList(const ArrayList& arr) {
         capacity_ = arr.capacity_;
@@ -30,9 +49,18 @@ public:
     void AppendAll(const ArrayList& arr);
     void InsertAt(int index, T value);
     void RemoveAt(int index);
-    void RemoveAll();
+    void RemoveAll() {
+        capacity_ = 0;
+        size_ = 0;
+        length_ = -1;
+        delete [] array_;
+        array_ = nullptr;
+    }
     int Pop();
     int Dequeue();
     int Length();
     int GetAt(int index);
+    ~ArrayList() {
+        delete [] array_;
+    }
 };
