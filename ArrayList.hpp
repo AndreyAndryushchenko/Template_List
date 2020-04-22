@@ -46,6 +46,26 @@ public:
             array_[i] = arr.array_[i];
         }
     }
+    ArrayList<T>& operator = (const ArrayList<T> arr) {
+        capacity_ = arr.capacity_;
+        size_ = arr.size_;
+        length_ = arr.length_;
+        array_ = new T[capacity_];
+        for (int i = 0; i<arr.size; i++) {
+            array_[i] = arr.array_[i];
+        }
+    }
+    ArrayList(std::initializer_list<T> elements) {
+        size_ = elements.size();
+        length_ = elements.size() - 1;
+        capacity_ = elements.size() * 2;
+        array_ = new T[capacity_];
+        int i = 0;
+        for (auto& el : elements) {
+            array_[i] = el;
+            i++;
+        }
+    }
     void append(T value) {
         size_++;
         length_++;
@@ -116,6 +136,12 @@ public:
         std::cout << "ArrayList" << std::endl;
         delete [] array_;
     }
+//    void PrintList() {
+//        for (int i = 0; i < size_; i++) {
+//            std::cout << array_[i] << " ";
+//        }
+//        std::cout << std::endl;
+//    }
 };
 
 template<class T>
