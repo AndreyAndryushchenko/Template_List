@@ -92,12 +92,12 @@ public:
         }
         array_[0] = value;
     }
-    void AppendAll(const ArrayList& arr) {
+    void append_all(const ArrayList& arr) {
         for (int i = 0; i < arr.size_; i++) {
             append(arr.array_[i]);
         }
     }
-    void InsertAt(int index, T value) {
+    void insert_at(int index, T value) {
         assert(index >= 0 && index < size_);
         size_++;
         length_++;
@@ -109,7 +109,7 @@ public:
         }
         array_[index+1] = value;
     }
-    void RemoveAt(int index) {
+    void remove_at(int index) {
         assert(size_ != 0);
         size_--;
         length_--;
@@ -121,14 +121,14 @@ public:
         }
         array_[length_+1] = (T)0;
     }
-    void RemoveAll() {
+    void remove_all() {
         capacity_ = 0;
         size_ = 0;
         length_ = -1;
         delete [] array_;
         array_ = nullptr;
     }
-    T Pop() {
+    T pop() {
         assert(size_ > 0);
         size_--;
         length_--;
@@ -139,7 +139,7 @@ public:
         array_[size_] = 0;
         return a;
     }
-    T Dequeue() {
+    T dequeue() {
         assert(size_ > 0);
         size_--;
         length_--;
@@ -153,11 +153,13 @@ public:
         array_[size_] = 0;
         return a;
     }
-    int Length();
+    int length();
     T& operator[](int index) {
         assert(index >= 0 && index < size_);
         return array_[index];
     }
+    void begin();
+    void end();
     ~ArrayList() {
         std::cout << "ArrayList" << std::endl;
         delete [] array_;
@@ -165,7 +167,7 @@ public:
 };
 
 template<class T>
-int ArrayList<T>::Length() {
+int ArrayList<T>::length() {
     return size_;
 }
 
