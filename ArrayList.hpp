@@ -158,8 +158,12 @@ public:
         assert(index >= 0 && index < size_);
         return array_[index];
     }
-    void begin();
-    void end();
+    T* begin() {
+        return array_;
+    }
+    T* end() {
+        return array_ + size_;
+    }
     ~ArrayList() {
         std::cout << "ArrayList" << std::endl;
         delete [] array_;

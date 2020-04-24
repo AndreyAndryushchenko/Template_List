@@ -29,5 +29,14 @@ int main() {
     assert(12 == list1.length());
     assert(3 == list2.length());
     assert(30 == list2[1]);
+    for (auto& el: list1) {
+        cout << el << " ";
+    }
+    cout << endl;
+    ArrayList<int> list = {1,2,3,4,5,6,7,8,9};
+    for (auto el = list.begin(); el != list.end(); el++) {
+        cout << *el << " ";
+    }
+    cout << endl;
     return 0;
 }
