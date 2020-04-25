@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int main() {
+void test1() {
     ArrayList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     ArrayList<int> list2;
     ArrayList<int> list3 = ArrayList<int>(5);
@@ -38,5 +38,32 @@ int main() {
         cout << *el << " ";
     }
     cout << endl;
+}
+
+void test2() {
+    {
+        ArrayList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ArrayList<int> list2 = list1;
+        assert(list2.pop() == list1.pop());
+        assert(list2.dequeue() == list1.dequeue());
+        ArrayList<int> list3(1);
+        list3 = list1;
+        assert(list3.pop() == list1.pop());
+        assert(list3.length() == list1.length());
+    }
+}
+
+void test3() {
+    ArrayList<int> list = {1,2,3,4,5,6,7,8,9};
+    auto a = list.dequeue();
+    assert(a == 1);
+    auto b = list.pop();
+    assert(b == 9);
+}
+
+int main() {
+    test1();
+    test2();
+    test3();
     return 0;
 }

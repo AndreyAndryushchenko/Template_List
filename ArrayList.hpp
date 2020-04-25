@@ -29,30 +29,33 @@ private:
         array_ = arr;
     }
 public:
-    explicit ArrayList(int capacity = 0) : capacity_(capacity), length_(-1), size_(0) {
-        if (capacity == 0) {
-            array_ = nullptr;
-        } else {
-            array_ = new T[capacity];
+    explicit ArrayList(int capacity = 2) : capacity_(capacity), length_(-1), size_(0) {
+        if (capacity < 2) {
+            capacity_ =2;
         }
+        array_ = new T[capacity];
     }
     ArrayList(const ArrayList& arr) {
         capacity_ = arr.capacity_;
         size_ = arr.size_;
         length_ = arr.length_;
         array_ = new T[capacity_];
-        for (int i = 0; i<arr.size; i++) {
+        for (int i = 0; i<arr.size_; i++) {
             array_[i] = arr.array_[i];
         }
     }
-    ArrayList<T>& operator = (const ArrayList<T> arr) {
-        capacity_ = arr.capacity_;
-        size_ = arr.size_;
-        length_ = arr.length_;
-        array_ = new T[capacity_];
-        for (int i = 0; i<arr.size; i++) {
-            array_[i] = arr.array_[i];
+    ArrayList<T>& operator = (const ArrayList<T>& arr) {
+        if (this != &arr) {
+            capacity_ = arr.capacity_;
+            size_ = arr.size_;
+            length_ = arr.length_;
+            delete[] array_;
+            array_ = new T[capacity_];
+            for (int i = 0; i < arr.size_; i++) {
+                array_[i] = arr.array_[i];
+            }
         }
+        return *this;
     }
     ArrayList(std::initializer_list<T> elements) {
         size_ = elements.size();
@@ -68,10 +71,6 @@ public:
     void append(T value) {
         size_++;
         length_++;
-        if (capacity_ == 0) {
-            capacity_ =2;
-            array_ = new T[capacity_];
-        }
         if (size_ == capacity_) {
             MacroMemory();
         }
@@ -80,10 +79,6 @@ public:
     void prepend(T value) {
         size_++;
         length_++;
-        if (capacity_ == 0) {
-            capacity_ =2;
-            array_ = new T[capacity_];
-        }
         if (size_ == capacity_) {
             MacroMemory();
         }
@@ -110,7 +105,7 @@ public:
         array_[index+1] = value;
     }
     void remove_at(int index) {
-        assert(size_ != 0);
+        assert(size_ > 0);
         size_--;
         length_--;
         if (capacity_ / size_ == 4) {
@@ -122,11 +117,11 @@ public:
         array_[length_+1] = (T)0;
     }
     void remove_all() {
-        capacity_ = 0;
+        capacity_ = 2;
         size_ = 0;
         length_ = -1;
         delete [] array_;
-        array_ = nullptr;
+        array_ = new T[capacity_];
     }
     T pop() {
         assert(size_ > 0);
@@ -153,7 +148,9 @@ public:
         array_[size_] = 0;
         return a;
     }
-    int length();
+    int length() {
+        return size_;
+    }
     T& operator[](int index) {
         assert(index >= 0 && index < size_);
         return array_[index];
@@ -169,14 +166,3 @@ public:
         delete [] array_;
     }
 };
-
-template<class T>
-int ArrayList<T>::length() {
-    return size_;
-}
-
-// Нужно ли удалять конструктор перемещения и оператор присвоения перемещением?
-// Как сделать заполняющий конструктор под шаблонный тип?
-// Нужно ли указывать в методах значения по умолчанию в случае которых будем выбрасывать исключение?
-// Какой тип нам необходимо передавать в методы, добавляющие элементы?
-// В чем разниуа между ключевыми словами typename и class в объявлении шаблона?
