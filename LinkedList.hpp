@@ -23,7 +23,7 @@ public:
     explicit LinkedList() : head_(nullptr), tail_(nullptr) {}
     LinkedList(std::initializer_list<T> elements) {
         for (auto& el: elements) {
-            this->append(el);
+            append(el);
         }
     }
     void append(T value) {
@@ -50,13 +50,13 @@ public:
             head_ = new_node;
         }
     }
-    void append_all(const LinkedList& list) {
+    void append_all(const LinkedList<T>& list) {
         for (int i = 0; i < list.length(); i++) {
             append(list[i]);
         }
     }
     void insert_at(int index, T value) {
-        assert(index >= 0 && index < this->length());
+        assert(index >= 0 && index < length());
         int c=0;
         Node<T>* ptr = head_;
         while (c!=index) {
@@ -107,9 +107,17 @@ public:
         delete cmp;
         return a;
     }
-    int length();
+    int length() {
+        int i = 0;
+        Node<T>* cmp = head_;
+        while (cmp != nullptr) {
+            i++;
+            cmp = cmp->next_;
+        }
+        return i;
+    }
     T& operator[](int index) {
-        assert(index >= 0 && index < this->length());
+        assert(index >= 0 && index < length());
         int c=0;
         Node<T>* cmp = head_;
         while (c != index) {
@@ -123,14 +131,3 @@ public:
         delete head_;
     }
 };
-
-template<typename T>
-int LinkedList<T>::length() {
-    int i = 0;
-    Node<T>* cmp = head_;
-    while (cmp != nullptr) {
-        i++;
-        cmp = cmp->next_;
-    }
-    return i;
-}
