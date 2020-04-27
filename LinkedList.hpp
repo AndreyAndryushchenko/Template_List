@@ -161,7 +161,7 @@ namespace linked {
         }
 
         Node<T> *end() {
-            return tail_;
+            return tail_->next_;
         }
 
         ~LinkedList() {
