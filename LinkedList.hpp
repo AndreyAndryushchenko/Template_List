@@ -6,7 +6,7 @@
 template <typename T>
 struct Node {
     T value_;
-    struct Node* next_;
+    struct Node<T>* next_;
 public:
     explicit Node(T value = 0, Node<T>* next = nullptr) : value_(value), next_(next) {}
     ~Node() {
@@ -69,6 +69,10 @@ public:
         ptr->next_ = new_node;
     }
     void remove_at(int index) {
+        if (index == 0) {
+            dequeue();
+            return;
+        }
         Node<T>* cmp = head_;
         Node<T>* ptr = nullptr;
         int c = 0;
@@ -107,7 +111,7 @@ public:
         delete cmp;
         return a;
     }
-    int length() {
+    int length() const{
         int i = 0;
         Node<T>* cmp = head_;
         while (cmp != nullptr) {
@@ -116,7 +120,7 @@ public:
         }
         return i;
     }
-    T& operator[](int index) {
+    T& operator[](int index) const{
         assert(index >= 0 && index < length());
         int c=0;
         Node<T>* cmp = head_;
