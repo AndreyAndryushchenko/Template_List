@@ -40,7 +40,7 @@ namespace array {
             array_ = new T[capacity];
         }
 
-        ArrayList(const ArrayList &arr) {
+        ArrayList(const ArrayList<T> &arr) {
             capacity_ = arr.capacity_;
             size_ = arr.size_;
             length_ = arr.length_;
@@ -97,7 +97,7 @@ namespace array {
             array_[0] = value;
         }
 
-        void append_all(const ArrayList &arr) {
+        void append_all(const ArrayList<T> &arr) {
             for (int i = 0; i < arr.size_; i++) {
                 append(arr.array_[i]);
             }

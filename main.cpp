@@ -101,9 +101,14 @@ void test4() {
 }
 
 int main() {
+    std::cout << "=============" << std::endl;
     test1();
+    std::cout << "=============" << std::endl;
     test2();
+    std::cout << "=============" << std::endl;
     test3();
+    std::cout << "=============" << std::endl;
     test4();
+    std::cout << "=============" << std::endl;
     return 0;
 }

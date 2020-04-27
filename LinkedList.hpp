@@ -1,7 +1,7 @@
 #pragma once
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 template <typename T>
 struct Node {
@@ -30,14 +30,14 @@ namespace linked {
             }
         }
 
-        LinkedList(const LinkedList<T>& list) {
+        LinkedList(const LinkedList<T> &list) {
             head_ = nullptr;
             for (int i = 0; i < list.length(); i++) {
                 append(list[i]);
             }
         }
 
-        LinkedList<T>& operator=(const LinkedList<T>& list) {
+        LinkedList<T> &operator=(const LinkedList<T> &list) {
             if (this != &list) {
                 delete head_;
                 head_ = nullptr;
@@ -156,11 +156,11 @@ namespace linked {
             return cmp->value_;
         }
 
-        Node<T>* begin() {
+        Node<T> *begin() {
             return head_;
         }
 
-        Node<T>* end() {
+        Node<T> *end() {
             return tail_;
         }
 
