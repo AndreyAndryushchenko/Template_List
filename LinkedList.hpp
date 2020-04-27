@@ -14,7 +14,8 @@ public:
         delete next_;
     }
 };
-namespace lab {
+
+namespace linked {
     template<typename T>
     class LinkedList {
         Node<T> *head_;
@@ -23,15 +24,32 @@ namespace lab {
         explicit LinkedList() : head_(nullptr), tail_(nullptr) {}
 
         LinkedList(std::initializer_list<T> elements) {
-            for (auto &el: elements) {
+            head_ = nullptr;
+            for (auto& el: elements) {
                 append(el);
             }
         }
 
+        LinkedList(const LinkedList<T>& list) {
+            head_ = nullptr;
+            for (int i = 0; i < list.length(); i++) {
+                append(list[i]);
+            }
+        }
+
+        LinkedList<T>& operator=(const LinkedList<T>& list) {
+            if (this != &list) {
+                delete head_;
+                head_ = nullptr;
+                for (int i = 0; i < list.length(); i++) {
+                    append(list[i]);
+                }
+            }
+            return *this;
+        }
+
         void append(T value) {
-            Node<T> *new_node = new Node<T>;
-            new_node->value_ = value;
-            new_node->next_ = nullptr;
+            Node<T> *new_node = new Node<T>(value, nullptr);
             if (head_ == nullptr) {
                 head_ = new_node;
                 tail_ = new_node;
@@ -42,9 +60,7 @@ namespace lab {
         }
 
         void prepend(T value) {
-            Node<T> *new_node = new Node<T>;
-            new_node->value_ = value;
-            new_node->next_ = nullptr;
+            Node<T> *new_node = new Node<T>(value, nullptr);
             if (head_ == nullptr) {
                 head_ = new_node;
                 tail_ = new_node;
@@ -54,7 +70,7 @@ namespace lab {
             }
         }
 
-        void append_all(const LinkedList<T> &list) {
+        void append_all(const LinkedList<T>& list) {
             for (int i = 0; i < list.length(); i++) {
                 append(list[i]);
             }
@@ -68,9 +84,7 @@ namespace lab {
                 ptr = ptr->next_;
                 c++;
             }
-            Node<T> *new_node = new Node<T>;
-            new_node->value_ = value;
-            new_node->next_ = ptr->next_;
+            Node<T> *new_node = new Node<T>(value, ptr->next_);
             ptr->next_ = new_node;
         }
 
@@ -107,7 +121,7 @@ namespace lab {
                 ptr = ptr->next_;
             }
             tail_->next_ = nullptr;
-            T a = ptr->value_;
+            auto a = ptr->value_;
             delete ptr;
             return a;
         }
@@ -116,7 +130,7 @@ namespace lab {
             Node<T> *cmp = head_;
             head_ = head_->next_;
             cmp->next_ = nullptr;
-            T a = cmp->value_;
+            auto a = cmp->value_;
             delete cmp;
             return a;
         }
@@ -140,6 +154,14 @@ namespace lab {
                 c++;
             }
             return cmp->value_;
+        }
+
+        Node<T>* begin() {
+            return head_;
+        }
+
+        Node<T>* end() {
+            return tail_;
         }
 
         ~LinkedList() {

@@ -1,12 +1,10 @@
 #include "ArrayList.hpp"
 #include "LinkedList.hpp"
 
-using namespace std;
-
 void test1() {
-    ArrayList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    ArrayList<int> list2;
-    ArrayList<int> list3 = ArrayList<int>(5);
+    array::ArrayList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    array::ArrayList<int> list2;
+    array::ArrayList<int> list3 = array::ArrayList<int>(5);
     assert(0 == list2.length());
     list2.append(1);
     list2.append(25);
@@ -31,41 +29,31 @@ void test1() {
     assert(3 == list2.length());
     assert(30 == list2[1]);
     for (auto& el: list1) {
-        cout << el << " ";
+        std::cout << el << " ";
     }
-    cout << endl;
-    ArrayList<int> list = {1,2,3,4,5,6,7,8,9};
+    std::cout << std::endl;
+    array::ArrayList<int> list = {1,2,3,4,5,6,7,8,9};
     for (auto el = list.begin(); el != list.end(); el++) {
-        cout << *el << " ";
+        std::cout << *el << " ";
     }
-    cout << endl;
+    std::cout << std::endl;
 }
 
 void test2() {
-    {
-        ArrayList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ArrayList<int> list2 = list1;
-        assert(list2.pop() == list1.pop());
-        assert(list2.dequeue() == list1.dequeue());
-        ArrayList<int> list3(1);
-        list3 = list1;
-        assert(list3.pop() == list1.pop());
-        assert(list3.length() == list1.length());
-    }
+    array::ArrayList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    array::ArrayList<int> list2 = list1;
+    assert(list2.pop() == list1.pop());
+    assert(list2.dequeue() == list1.dequeue());
+    array::ArrayList<int> list3(1);
+    list3 = list1;
+    assert(list3.pop() == list1.pop());
+    assert(list3.length() == list1.length());
 }
 
 void test3() {
-    ArrayList<int> list = {1,2,3,4,5,6,7,8,9};
-    auto a = list.dequeue();
-    assert(a == 1);
-    auto b = list.pop();
-    assert(b == 9);
-}
-
-void test4() {
-    lab::LinkedList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    lab::LinkedList<int> list2;
-    lab::LinkedList<int> list3;
+    linked::LinkedList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    linked::LinkedList<int> list2;
+    linked::LinkedList<int> list3;
     assert(0 == list2.length());
     list2.append(1);
     list2.append(25);
@@ -91,14 +79,25 @@ void test4() {
     assert(3 == list2.length());
     assert(30 == list2[1]);
 //    for (auto& el: list1) {
-//        cout << el << " ";
+//        std::cout << el.value_ << " ";
 //    }
-//    cout << endl;
-//    ArrayList<int> list = {1,2,3,4,5,6,7,8,9};
+//    std::cout << std::endl;
+//    linked::LinkedList<int> list = {1,2,3,4,5,6,7,8,9};
 //    for (auto el = list.begin(); el != list.end(); el++) {
-//        cout << *el << " ";
+//        std::cout << el->value_ << " ";
 //    }
-//    cout << endl;
+//    std::cout << std::endl;
+}
+
+void test4() {
+    linked::LinkedList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    linked::LinkedList<int> list2 = list1;
+    assert(list2.pop() == list1.pop());
+    assert(list2.dequeue() == list1.dequeue());
+    linked::LinkedList<int> list3;
+    list3 = list1;
+    assert(list3.pop() == list1.pop());
+    assert(list3.length() == list1.length());
 }
 
 int main() {
