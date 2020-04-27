@@ -63,14 +63,14 @@ void test3() {
 }
 
 void test4() {
-    LinkedList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    LinkedList<int> list2;
-    LinkedList<int> list3;
+    lab::LinkedList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    lab::LinkedList<int> list2;
+    lab::LinkedList<int> list3;
     assert(0 == list2.length());
     list2.append(1);
     list2.append(25);
     list3.append(10);
-    //assert(9 == list1.length());
+    assert(9 == list1.length());
     assert(1 == list3.length());
     list2.prepend(100);
     assert(100 == list2[0]);
@@ -102,9 +102,9 @@ void test4() {
 }
 
 int main() {
-    //test1();
-    //test2();
-    //test3();
+    test1();
+    test2();
+    test3();
     test4();
     return 0;
 }
