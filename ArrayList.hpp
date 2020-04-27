@@ -3,7 +3,7 @@
 #include <cassert>
 #include <iostream>
 
-template <class T>
+template <typename T>
 class ArrayList {
 private:
     int capacity_;
