@@ -78,15 +78,15 @@ void test3() {
     assert(12 == list1.length());
     assert(3 == list2.length());
     assert(30 == list2[1]);
-//    for (auto& el: list1) {
-//        std::cout << el.value_ << " ";
-//    }
-//    std::cout << std::endl;
-//    linked::LinkedList<int> list = {1,2,3,4,5,6,7,8,9};
-//    for (auto el = list.begin(); el != list.end(); el++) {
-//        std::cout << el->value_ << " ";
-//    }
-//    std::cout << std::endl;
+    for (auto& el: list1) {
+        std::cout << el << " ";
+    }
+    std::cout << std::endl;
+    linked::LinkedList<int> list = {1,2,3,4,5,6,7,8,9};
+    for (linked::LinkedList<int>::Iterator el = list.begin(); el != linked::LinkedList<int>::Iterator(list.end()); ++el) {
+        std::cout << *el << " ";
+    }
+    std::cout << std::endl;
 }
 
 void test4() {

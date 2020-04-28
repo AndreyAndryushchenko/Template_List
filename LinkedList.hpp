@@ -21,6 +21,28 @@ namespace linked {
         Node<T> *head_;
         Node<T> *tail_;
     public:
+        class Iterator {
+        private:
+            T* ptr_;
+        public:
+            explicit Iterator(T* ptr) : ptr_(ptr) {}
+            Iterator operator++() {
+                return Iterator{ptr_->next_};
+            }
+            T& operator*() {
+                return *ptr_;
+            }
+            T* operator->() {
+                return ptr_;
+            }
+            bool operator==(const Iterator& rhs) {
+                return this == &rhs;
+            }
+            bool operator!=(const Iterator& rhs) {
+                return this != &rhs;
+            }
+        };
+
         explicit LinkedList() : head_(nullptr), tail_(nullptr) {}
 
         LinkedList(std::initializer_list<T> elements) {
@@ -156,12 +178,12 @@ namespace linked {
             return cmp->value_;
         }
 
-        Node<T> *begin() {
-            return head_;
+        Iterator begin() {
+            return Iterator(head_);
         }
 
-        Node<T> *end() {
-            return tail_->next_;
+        Iterator end() {
+            return Iterator(tail_->next_);
         }
 
         ~LinkedList() {
