@@ -23,23 +23,24 @@ namespace linked {
     public:
         class Iterator {
         private:
-            T* ptr_;
+            Node<T>* ptr_;
         public:
-            explicit Iterator(T* ptr) : ptr_(ptr) {}
+            explicit Iterator(Node<T>* ptr) : ptr_(ptr) {}
             Iterator operator++() {
-                return Iterator{ptr_->next_};
+                ptr_ = ptr_->next_;
+                return *this;
             }
-            T& operator*() {
-                return *ptr_;
+            T& operator*() const {
+                return ptr_->value_;
             }
-            T* operator->() {
-                return ptr_;
+            T* operator->() const {
+                return &ptr_->value_;
             }
-            bool operator==(const Iterator& rhs) {
-                return this == &rhs;
+            bool operator==(const Iterator& rhs) const {
+                return ptr_ == rhs.ptr_;
             }
-            bool operator!=(const Iterator& rhs) {
-                return this != &rhs;
+            bool operator!=(const Iterator& rhs) const {
+                return ptr_ != rhs.ptr_;
             }
         };
 
@@ -178,12 +179,12 @@ namespace linked {
             return cmp->value_;
         }
 
-        Iterator begin() {
+        Iterator begin() const {
             return Iterator(head_);
         }
 
-        Iterator end() {
-            return Iterator(tail_->next_);
+        Iterator end() const {
+            return Iterator(tail_);
         }
 
         ~LinkedList() {
