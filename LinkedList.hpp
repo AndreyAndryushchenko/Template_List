@@ -26,9 +26,14 @@ namespace linked {
             Node<T>* ptr_;
         public:
             explicit Iterator(Node<T>* ptr) : ptr_(ptr) {}
-            Iterator operator++() {
+            const Iterator& operator++() {
                 ptr_ = ptr_->next_;
                 return *this;
+            }
+            Iterator operator++(int) {
+                Iterator result = *this;
+                ++(*this);
+                return result;
             }
             T& operator*() const {
                 return ptr_->value_;
@@ -184,7 +189,7 @@ namespace linked {
         }
 
         Iterator end() const {
-            return Iterator(tail_);
+            return Iterator(tail_->next_);
         }
 
         ~LinkedList() {

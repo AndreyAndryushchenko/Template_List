@@ -83,7 +83,7 @@ void test3() {
     }
     std::cout << std::endl;
     linked::LinkedList<int> list = {1,2,3,4,5,6,7,8,9};
-    for (linked::LinkedList<int>::Iterator el = list.begin(); el != list.end(); ++el) {
+    for (linked::LinkedList<int>::Iterator el = list.begin(); el != list.end(); el++) {
         std::cout << *el << " ";
     }
     std::cout << std::endl;
@@ -101,14 +101,14 @@ void test4() {
 }
 
 int main() {
-    std::cout << "=============" << std::endl;
+    std::cout << "=============================" << std::endl;
     test1();
-    std::cout << "=============" << std::endl;
+    std::cout << "=============================" << std::endl;
     test2();
-    std::cout << "=============" << std::endl;
+    std::cout << "=============================" << std::endl;
     test3();
-    std::cout << "=============" << std::endl;
+    std::cout << "=============================" << std::endl;
     test4();
-    std::cout << "=============" << std::endl;
+    std::cout << "=============================" << std::endl;
     return 0;
 }
