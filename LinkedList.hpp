@@ -61,7 +61,7 @@ namespace linked {
         LinkedList(const LinkedList<T> &list) {
             head_ = nullptr;
             for (int i = 0; i < list.length(); i++) {
-                append(list[i]);
+                append(list.at(i));
             }
         }
 
@@ -70,7 +70,7 @@ namespace linked {
                 delete head_;
                 head_ = nullptr;
                 for (int i = 0; i < list.length(); i++) {
-                    append(list[i]);
+                    append(list.at(i));
                 }
             }
             return *this;
@@ -100,7 +100,7 @@ namespace linked {
 
         void append_all(const LinkedList<T>& list) {
             for (int i = 0; i < list.length(); i++) {
-                append(list[i]);
+                append(list.at(i));
             }
         }
 
@@ -173,7 +173,18 @@ namespace linked {
             return i;
         }
 
-        T &operator[](int index) const {
+        T &operator[](int index) {
+            assert(index >= 0 && index < length());
+            int c = 0;
+            Node<T> *cmp = head_;
+            while (c != index) {
+                cmp = cmp->next_;
+                c++;
+            }
+            return cmp->value_;
+        }
+
+        const T& at(int index) const {
             assert(index >= 0 && index < length());
             int c = 0;
             Node<T> *cmp = head_;

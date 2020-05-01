@@ -173,6 +173,11 @@ namespace array {
             return array_[index];
         }
 
+        const T& at(int index) const {
+            assert(index >= 0 && index < size_);
+            return array_[index];
+        }
+
         T *begin() {
             return array_;
         }
