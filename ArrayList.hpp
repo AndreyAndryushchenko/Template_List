@@ -14,9 +14,9 @@ namespace array {
 
         void MacroMemory() {
             capacity_ *= 2;
-            auto arr = new T[capacity_];
+            auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
             for (int i = 0; i < size_; i++) {
-                arr[i] = array_[i];
+                arr[i] = std::move(array_[i]);
             }
             delete[] array_;
             array_ = arr;
@@ -24,9 +24,9 @@ namespace array {
 
         void MicroMemory() {
             capacity_ /= 2;
-            auto arr = new T[capacity_];
+            auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
             for (int i = 0; i < size_ + 1; i++) {
-                arr[i] = array_[i];
+                arr[i] = std::move(array_[i]);
             }
             delete[] array_;
             array_ = arr;
@@ -37,7 +37,7 @@ namespace array {
             if (capacity < 2) {
                 capacity_ = 2;
             }
-            array_ = new T[capacity];
+            array_ = static_cast<T*>(::operator new(sizeof(T) * capacity_));
         }
 
         ArrayList(const ArrayList<T> &arr) {
@@ -76,16 +76,25 @@ namespace array {
             }
         }
 
-        void append(T value) {
+        void append(const T& value) {
             size_++;
             length_++;
             if (size_ == capacity_) {
                 MacroMemory();
             }
-            array_[length_] = value;
+            ::new(array_ + length_) T(value);
         }
 
-        void prepend(T value) {
+        void append(T&& value) {
+            size_++;
+            length_++;
+            if (size_ == capacity_) {
+                MacroMemory();
+            }
+            ::new(array_ + length_) T(std::move(value));
+        }
+
+        void prepend(const T& value) {
             size_++;
             length_++;
             if (size_ == capacity_) {
@@ -94,7 +103,19 @@ namespace array {
             for (int i = length_; i > 0; i--) {
                 array_[i] = array_[i - 1];
             }
-            array_[0] = value;
+            ::new(array_) T(value);
+        }
+
+        void prepend(T&& value) {
+            size_++;
+            length_++;
+            if (size_ == capacity_) {
+                MacroMemory();
+            }
+            for (int i = length_; i > 0; i--) {
+                array_[i] = array_[i - 1];
+            }
+            ::new(array_) T(std::move(value));
         }
 
         void append_all(const ArrayList<T> &arr) {

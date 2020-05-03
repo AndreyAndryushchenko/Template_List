@@ -76,8 +76,10 @@ namespace linked {
             return *this;
         }
 
-        void append(T value) {
-            Node<T> *new_node = new Node<T>(value, nullptr);
+        void append(const T& value) {
+            Node<T> *new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            new_node->value_ = T(value);
+            new_node->next_ = nullptr;
             if (head_ == nullptr) {
                 head_ = new_node;
                 tail_ = new_node;
@@ -87,8 +89,36 @@ namespace linked {
             }
         }
 
-        void prepend(T value) {
-            Node<T> *new_node = new Node<T>(value, nullptr);
+        void append(T&& value) {
+            Node<T> *new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            new_node->value_ = T(std::move(value));
+            new_node->next_ = nullptr;
+            if (head_ == nullptr) {
+                head_ = new_node;
+                tail_ = new_node;
+            } else {
+                tail_->next_ = new_node;
+                tail_ = new_node;
+            }
+        }
+
+        void prepend(const T& value) {
+            Node<T> *new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            new_node->value_ = T(value);
+            new_node->next_ = nullptr;
+            if (head_ == nullptr) {
+                head_ = new_node;
+                tail_ = new_node;
+            } else {
+                new_node->next_ = head_;
+                head_ = new_node;
+            }
+        }
+
+        void prepend(T&& value) {
+            Node<T> *new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            new_node->value_ = T(std::move(value));
+            new_node->next_ = nullptr;
             if (head_ == nullptr) {
                 head_ = new_node;
                 tail_ = new_node;
