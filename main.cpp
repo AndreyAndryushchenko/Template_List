@@ -53,14 +53,35 @@ void test2() {
 
 void test3() {
     array::ArrayList<std::unique_ptr<int>> v;
+    assert(v.length() == 0);
     v.append(std::make_unique<int>(42));
-    v.append(std::make_unique<int>(5));
-    v.insert_at(0, std::make_unique<int>(7));
-    for (auto & el: v) {
+    assert(v.length() == 1);
+    assert(*v.at(0).get() == 42);
+    v.prepend(std::make_unique<int>(7));
+    assert(*v.at(0).get() == 7);
+    assert(*v.at(1).get() == 42);
+    v.insert_at(0, std::make_unique<int>(25));
+    assert(*v.at(1).get() == 25);
+    assert(7 == *v.dequeue().get());
+    assert(42 == *v.pop().get());
+    v.insert_at(0, std::make_unique<int>(50));
+    assert(*v.at(1).get() == 50);
+    v.append(std::make_unique<int>(30));
+    v.remove_at(1);
+    assert(*v.at(1).get() == 30);
+    for (auto& el: v) {
         std::cout << *el << " ";
     }
     std::cout << std::endl;
-    assert(*v.at(1).get() == 7);
+    for (auto el = v.begin(); el != v.end(); el++) {
+        std::cout << **el << " ";
+    }
+    std::cout << std::endl;
+    array::ArrayList<std::unique_ptr<int >> v1(std::move(v));
+    assert(*v1.at(1).get() == 30);
+//    array::ArrayList<std::unique_ptr<int >> v2;
+//    v2 = std::move(v1);
+//    assert(*v2.at(0).get() == 25);
 }
 
 void test4() {
