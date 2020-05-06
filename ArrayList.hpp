@@ -16,33 +16,13 @@ namespace array {
             capacity_ *= 2;
             auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
             for (int i = 0; i < size_; i++) {
-                ::new(arr + i) T(array_[i]);
-            }
-            delete array_;
-            array_ = arr;
-        }
-
-        void MicroMemory() {
-            capacity_ /= 2;
-            auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
-            for (int i = 0; i < size_ + 1; i++) {
-                ::new(arr + i) T(array_[i]);
-            }
-            delete array_;
-            array_ = arr;
-        }
-
-        void MacroMemoryUncopy() {
-            capacity_ *= 2;
-            auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
-            for (int i = 0; i < size_; i++) {
                 ::new(arr + i) T(std::move(array_[i]));
             }
             delete array_;
             array_ = arr;
         }
 
-        void MicroMemoryUncopy() {
+        void MicroMemory() {
             capacity_ /= 2;
             auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
             for (int i = 0; i < size_ + 1; i++) {
@@ -88,12 +68,32 @@ namespace array {
             size_ = elements.size();
             length_ = elements.size() - 1;
             capacity_ = elements.size() * 2;
-            array_ = new T[capacity_];
+            array_ = static_cast<T*>(::operator new(sizeof(T) * capacity_));
             int i = 0;
             for (auto &el : elements) {
-                ::new(array_ + i) T(el);
+                ::new(array_ + i) T(std::move(el));
                 i++;
             }
+        }
+
+        ArrayList<T>(ArrayList<T> &&arr) {
+            capacity_ = arr.capacity_;
+            size_ = arr.size_;
+            length_ = arr.length_;
+            array_ = arr.array_;
+            arr.array_ = nullptr;
+        }
+
+        ArrayList<T> &operator=(ArrayList<T> &&arr) {
+            if (this != &arr) {
+                capacity_ = arr.capacity_;
+                size_ = arr.size_;
+                length_ = arr.length_;
+                delete array_;
+                array_ = arr.array_;
+                arr.array_ = nullptr;
+            }
+            return *this;
         }
 
         void append(const T& value) {
@@ -109,7 +109,7 @@ namespace array {
             size_++;
             length_++;
             if (size_ == capacity_) {
-                MacroMemoryUncopy();
+                MacroMemory();
             }
             ::new(array_ + length_) T(std::move(value));
         }
@@ -130,7 +130,7 @@ namespace array {
             size_++;
             length_++;
             if (size_ == capacity_) {
-                MacroMemoryUncopy();
+                MacroMemory();
             }
             for (int i = length_; i > 0; i--) {
                 ::new(array_ + i) T(std::move(array_[i-1])); //array_[i] = array_[i - 1];
@@ -164,7 +164,7 @@ namespace array {
             size_++;
             length_++;
             if (size_ == capacity_) {
-                MacroMemoryUncopy();
+                MacroMemory();
             }
             for (int i = length_; i > index + 1; i--) {
                 ::new(array_ + i) T(std::move(array_[i-1]));
@@ -181,12 +181,10 @@ namespace array {
             }
             for (int i = index; i < size_; i++) {
                 array_[i].~T();
-                ::new(array_ + i) T(array_[i+1]);
+                ::new(array_ + i) T(std::move(array_[i+1]));
             }
             array_[size_].~T();
         }
-
-        //void remove_at() for uncopy type
 
         void remove_all() {
             capacity_ = 2;
@@ -198,34 +196,17 @@ namespace array {
 
         T pop() {
             assert(size_ > 0);
-            size_--;
-            length_--;
-            if (capacity_ / size_ == 4) {
-                MicroMemory();
-            }
-            auto a = array_[size_];
-            array_[size_] = 0;
+            auto a = std::move(array_[length_]);
+            remove_at(length_);
             return a;
         }
-
-        //T pop() for uncopy type
 
         T dequeue() {
             assert(size_ > 0);
-            size_--;
-            length_--;
-            if (capacity_ / size_ == 4) {
-                MicroMemory();
-            }
-            auto a = array_[0];
-            for (int i = 0; i < size_; i++) {
-                ::new(array_ + i) T(array_[i+1]);
-            }
-            array_[size_] = 0;
+            auto a = std::move(array_[0]);
+            remove_at(0);
             return a;
         }
-
-        //T dequeue() for uncopy type
 
         int length() {
             return size_;
