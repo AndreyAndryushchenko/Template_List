@@ -16,9 +16,9 @@ namespace array {
             capacity_ *= 2;
             auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
             for (int i = 0; i < size_; i++) {
-                arr[i] = std::move(array_[i]);
+                ::new(arr + i) T(array_[i]);
             }
-            delete[] array_;
+            delete array_;
             array_ = arr;
         }
 
@@ -26,9 +26,29 @@ namespace array {
             capacity_ /= 2;
             auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
             for (int i = 0; i < size_ + 1; i++) {
-                arr[i] = std::move(array_[i]);
+                ::new(arr + i) T(array_[i]);
             }
-            delete[] array_;
+            delete array_;
+            array_ = arr;
+        }
+
+        void MacroMemoryUncopy() {
+            capacity_ *= 2;
+            auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
+            for (int i = 0; i < size_; i++) {
+                ::new(arr + i) T(std::move(array_[i]));
+            }
+            delete array_;
+            array_ = arr;
+        }
+
+        void MicroMemoryUncopy() {
+            capacity_ /= 2;
+            auto arr = static_cast<T*>(::operator new(sizeof(T) * capacity_));
+            for (int i = 0; i < size_ + 1; i++) {
+                ::new(arr + i) T(std::move(array_[i]));
+            }
+            delete array_;
             array_ = arr;
         }
 
@@ -55,7 +75,7 @@ namespace array {
                 capacity_ = arr.capacity_;
                 size_ = arr.size_;
                 length_ = arr.length_;
-                delete[] array_;
+                delete array_;
                 array_ = new T[capacity_];
                 for (int i = 0; i < arr.size_; i++) {
                     array_[i] = arr.array_[i];
@@ -71,7 +91,7 @@ namespace array {
             array_ = new T[capacity_];
             int i = 0;
             for (auto &el : elements) {
-                array_[i] = el;
+                ::new(array_ + i) T(el);
                 i++;
             }
         }
@@ -89,7 +109,7 @@ namespace array {
             size_++;
             length_++;
             if (size_ == capacity_) {
-                MacroMemory();
+                MacroMemoryUncopy();
             }
             ::new(array_ + length_) T(std::move(value));
         }
@@ -101,7 +121,7 @@ namespace array {
                 MacroMemory();
             }
             for (int i = length_; i > 0; i--) {
-                array_[i] = array_[i - 1];
+                ::new(array_ + i) T(array_[i-1]);
             }
             ::new(array_) T(value);
         }
@@ -110,10 +130,10 @@ namespace array {
             size_++;
             length_++;
             if (size_ == capacity_) {
-                MacroMemory();
+                MacroMemoryUncopy();
             }
             for (int i = length_; i > 0; i--) {
-                array_[i] = array_[i - 1];
+                ::new(array_ + i) T(std::move(array_[i-1])); //array_[i] = array_[i - 1];
             }
             ::new(array_) T(std::move(value));
         }
@@ -124,7 +144,9 @@ namespace array {
             }
         }
 
-        void insert_at(int index, T value) {
+        void append_all(ArrayList<T> &&arr) = delete;
+
+        void insert_at(int index, const T& value) {
             assert(index >= 0 && index < size_);
             size_++;
             length_++;
@@ -132,9 +154,22 @@ namespace array {
                 MacroMemory();
             }
             for (int i = length_; i > index + 1; i--) {
-                array_[i] = array_[i - 1];
+                ::new(array_ + i) T(array_[i-1]);
             }
-            array_[index + 1] = value;
+            ::new(array_ + index + 1) T(value);
+        }
+
+        void insert_at(int index, T&& value) {
+            assert(index >= 0 && index < size_);
+            size_++;
+            length_++;
+            if (size_ == capacity_) {
+                MacroMemoryUncopy();
+            }
+            for (int i = length_; i > index + 1; i--) {
+                ::new(array_ + i) T(std::move(array_[i-1]));
+            }
+            ::new(array_ + index + 1) T(std::move(value));
         }
 
         void remove_at(int index) {
@@ -145,17 +180,20 @@ namespace array {
                 MicroMemory();
             }
             for (int i = index; i < size_; i++) {
-                array_[i] = array_[i + 1];
+                array_[i].~T();
+                ::new(array_ + i) T(array_[i+1]);
             }
-            array_[length_ + 1] = (T) 0;
+            array_[size_].~T();
         }
+
+        //void remove_at() for uncopy type
 
         void remove_all() {
             capacity_ = 2;
             size_ = 0;
             length_ = -1;
-            delete[] array_;
-            array_ = new T[capacity_];
+            delete array_;
+            array_ = static_cast<T*>(::operator new(sizeof(T) * capacity_));
         }
 
         T pop() {
@@ -170,6 +208,8 @@ namespace array {
             return a;
         }
 
+        //T pop() for uncopy type
+
         T dequeue() {
             assert(size_ > 0);
             size_--;
@@ -179,11 +219,13 @@ namespace array {
             }
             auto a = array_[0];
             for (int i = 0; i < size_; i++) {
-                array_[i] = array_[i + 1];
+                ::new(array_ + i) T(array_[i+1]);
             }
             array_[size_] = 0;
             return a;
         }
+
+        //T dequeue() for uncopy type
 
         int length() {
             return size_;
@@ -209,7 +251,7 @@ namespace array {
 
         ~ArrayList() {
             std::cout << "ArrayList" << std::endl;
-            delete[] array_;
+            delete array_;
         }
     };
 }

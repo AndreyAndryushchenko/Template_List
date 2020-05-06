@@ -54,7 +54,13 @@ void test2() {
 void test3() {
     array::ArrayList<std::unique_ptr<int>> v;
     v.append(std::make_unique<int>(42));
-    assert(*v.at(0).get() == 42);
+    v.append(std::make_unique<int>(5));
+    v.insert_at(0, std::make_unique<int>(7));
+    for (auto & el: v) {
+        std::cout << *el << " ";
+    }
+    std::cout << std::endl;
+    assert(*v.at(1).get() == 7);
 }
 
 void test4() {
@@ -125,7 +131,7 @@ int main() {
     std::cout << "=============================" << std::endl;
     test5();
     std::cout << "=============================" << std::endl;
-    test6();
-    std::cout << "=============================" << std::endl;
+    //test6();
+    //std::cout << "=============================" << std::endl;
     return 0;
 }
