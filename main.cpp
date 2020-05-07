@@ -79,9 +79,9 @@ void test3() {
     std::cout << std::endl;
     array::ArrayList<std::unique_ptr<int >> v1(std::move(v));
     assert(*v1.at(1).get() == 30);
-//    array::ArrayList<std::unique_ptr<int >> v2;
-//    v2 = std::move(v1);
-//    assert(*v2.at(0).get() == 25);
+    array::ArrayList<std::unique_ptr<int >> v2;
+    v2 = std::move(v1);
+    assert(*v2.at(0).get() == 25);
 }
 
 void test4() {
