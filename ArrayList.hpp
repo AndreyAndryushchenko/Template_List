@@ -18,7 +18,7 @@ namespace array {
             for (int i = 0; i < size_; i++) {
                 ::new(arr + i) T(std::move(array_[i]));
             }
-            delete array_;
+            ::operator delete(array_);
             array_ = arr;
         }
 
@@ -28,7 +28,7 @@ namespace array {
             for (int i = 0; i < size_ + 1; i++) {
                 ::new(arr + i) T(std::move(array_[i]));
             }
-            delete array_;
+            ::operator delete(array_);
             array_ = arr;
         }
 
@@ -44,9 +44,9 @@ namespace array {
             capacity_ = arr.capacity_;
             size_ = arr.size_;
             length_ = arr.length_;
-            array_ = new T[capacity_];
+            array_ = static_cast<T*>(::operator new(sizeof(T) * capacity_));
             for (int i = 0; i < arr.size_; i++) {
-                array_[i] = arr.array_[i];
+                ::new(array_ + i) T(arr.array_[i]);
             }
         }
 
@@ -55,10 +55,10 @@ namespace array {
                 capacity_ = arr.capacity_;
                 size_ = arr.size_;
                 length_ = arr.length_;
-                delete array_;
-                array_ = new T[capacity_];
+                ::operator delete(array_);
+                array_ = static_cast<T*>(::operator new(sizeof(T) * capacity_));
                 for (int i = 0; i < arr.size_; i++) {
-                    array_[i] = arr.array_[i];
+                    ::new(array_ + i) T(arr.array_[i]);
                 }
             }
             return *this;
@@ -71,7 +71,7 @@ namespace array {
             array_ = static_cast<T*>(::operator new(sizeof(T) * capacity_));
             int i = 0;
             for (auto &el : elements) {
-                ::new(array_ + i) T(std::move(el));
+                ::new(array_ + i) T(el);
                 i++;
             }
         }
@@ -89,7 +89,7 @@ namespace array {
                 capacity_ = arr.capacity_;
                 size_ = arr.size_;
                 length_ = arr.length_;
-                delete array_;
+                ::operator delete(array_);
                 array_ = arr.array_;
                 arr.array_ = nullptr;
             }
@@ -190,7 +190,7 @@ namespace array {
             capacity_ = 2;
             size_ = 0;
             length_ = -1;
-            delete array_;
+            ::operator delete(array_);
             array_ = static_cast<T*>(::operator new(sizeof(T) * capacity_));
         }
 
@@ -232,7 +232,7 @@ namespace array {
 
         ~ArrayList() {
             std::cout << "ArrayList" << std::endl;
-            delete array_;
+            ::operator delete(array_);
         }
     };
 }
