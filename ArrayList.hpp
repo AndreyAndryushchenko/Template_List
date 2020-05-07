@@ -176,8 +176,8 @@ namespace array {
             assert(size_ > 0);
             size_--;
             length_--;
-            if (capacity_ / size_ == 4) {
-                MicroMemory();
+            if (size_ != 0) {
+                if (capacity_ / size_ ==4) { MicroMemory(); }
             }
             for (int i = index; i < size_; i++) {
                 array_[i].~T();
