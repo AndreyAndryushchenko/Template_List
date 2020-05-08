@@ -8,7 +8,7 @@ struct Node {
     T value_;
     struct Node<T>* next_;
 public:
-    explicit Node(T value = 0, Node<T>* next = nullptr) : value_(value), next_(next) {}
+    explicit Node(T value, Node<T>* next) : value_(value), next_(next) {}
     ~Node() {
         std::cout << "~Node" << std::endl;
         delete next_;
@@ -77,22 +77,7 @@ namespace linked {
         }
 
         void append(const T& value) {
-            Node<T> *new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
-            new_node->value_ = T(value);
-            new_node->next_ = nullptr;
-            if (head_ == nullptr) {
-                head_ = new_node;
-                tail_ = new_node;
-            } else {
-                tail_->next_ = new_node;
-                tail_ = new_node;
-            }
-        }
-
-        void append(T&& value) {
-            Node<T> *new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
-            new_node->value_ = T(std::move(value));
-            new_node->next_ = nullptr;
+            Node<T> *new_node = new Node<T>(value, nullptr);
             if (head_ == nullptr) {
                 head_ = new_node;
                 tail_ = new_node;
@@ -103,22 +88,7 @@ namespace linked {
         }
 
         void prepend(const T& value) {
-            Node<T> *new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
-            new_node->value_ = T(value);
-            new_node->next_ = nullptr;
-            if (head_ == nullptr) {
-                head_ = new_node;
-                tail_ = new_node;
-            } else {
-                new_node->next_ = head_;
-                head_ = new_node;
-            }
-        }
-
-        void prepend(T&& value) {
-            Node<T> *new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
-            new_node->value_ = T(std::move(value));
-            new_node->next_ = nullptr;
+            Node<T> *new_node = new Node<T>(value, nullptr);
             if (head_ == nullptr) {
                 head_ = new_node;
                 tail_ = new_node;
@@ -134,7 +104,7 @@ namespace linked {
             }
         }
 
-        void insert_at(int index, T value) {
+        void insert_at(int index, const T& value) {
             assert(index >= 0 && index < length());
             int c = 0;
             Node<T> *ptr = head_;
@@ -193,7 +163,7 @@ namespace linked {
             return a;
         }
 
-        int length() const {
+        [[nodiscard]] int length() const {
             int i = 0;
             Node<T> *cmp = head_;
             while (cmp != nullptr) {
