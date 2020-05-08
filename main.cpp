@@ -117,7 +117,7 @@ void test4() {
     }
     std::cout << std::endl;
     linked::LinkedList<int> list = {1,2,3,4,5,6,7,8,9};
-    for (linked::LinkedList<int>::Iterator el = list.begin(); el != list.end(); el++) {
+    for (auto el = list.begin(); el != list.end(); el++) {
         std::cout << *el << " ";
     }
     std::cout << std::endl;
@@ -134,12 +134,6 @@ void test5() {
     assert(list3.length() == list1.length());
 }
 
-void test6() {
-    linked::LinkedList<std::unique_ptr<int>> v;
-    v.append(std::make_unique<int>(42));
-    assert(*v.at(0).get() == 42);
-}
-
 int main() {
     std::cout << "=============================" << std::endl;
     test1();
@@ -152,7 +146,5 @@ int main() {
     std::cout << "=============================" << std::endl;
     test5();
     std::cout << "=============================" << std::endl;
-    //test6();
-    //std::cout << "=============================" << std::endl;
     return 0;
 }
