@@ -247,7 +247,7 @@ namespace array {
         }
 
         ~ArrayList() {
-            std::cout << "ArrayList" << std::endl;
+            std::cout << "~ArrayList" << std::endl;
             for (int i = 0; i < size_; i++) {
                 array_[i].~T();
             }
