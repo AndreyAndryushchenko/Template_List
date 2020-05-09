@@ -32,6 +32,12 @@ namespace array {
             array_ = arr;
         }
 
+        void Shift(int index) {
+            for (int i = index; i < size_; i++) {
+                ::new(array_ + i) T(std::move(array_[i+1]));
+            }
+        }
+
     public:
         explicit ArrayList(int capacity = 2) : capacity_(capacity), length_(-1), size_(0) {
             if (capacity < 2) {
@@ -81,7 +87,10 @@ namespace array {
             size_ = arr.size_;
             length_ = arr.length_;
             array_ = arr.array_;
-            arr.array_ = nullptr;
+            arr.capacity_ = 2;
+            arr.size_ = 0;
+            arr.length_ = -1;
+            arr.array_ = static_cast<T*>(::operator new(sizeof(T) * arr.capacity_));
         }
 
         ArrayList<T> &operator=(ArrayList<T> &&arr) {
@@ -91,7 +100,10 @@ namespace array {
                 length_ = arr.length_;
                 ::operator delete(array_);
                 array_ = arr.array_;
-                arr.array_ = nullptr;
+                arr.capacity_ = 2;
+                arr.size_ = 0;
+                arr.length_ = -1;
+                arr.array_ = static_cast<T*>(::operator new(sizeof(T) * arr.capacity_));
             }
             return *this;
         }
@@ -179,14 +191,14 @@ namespace array {
             if (size_ != 0) {
                 if (capacity_ / size_ ==4) { MicroMemory(); }
             }
-            for (int i = index; i < size_; i++) {
-                array_[i].~T();
-                ::new(array_ + i) T(std::move(array_[i+1]));
-            }
-            array_[size_].~T();
+            array_[index].~T();
+            Shift(index);
         }
 
         void remove_all() {
+            for (int i = 0; i < size_; i++) {
+                array_[i].~T();
+            }
             capacity_ = 2;
             size_ = 0;
             length_ = -1;
@@ -196,15 +208,19 @@ namespace array {
 
         T pop() {
             assert(size_ > 0);
-            auto a = std::move(array_[length_]);
-            remove_at(length_);
+            size_--;
+            length_--;
+            auto a = std::move(array_[size_]);
+            Shift(size_);
             return a;
         }
 
         T dequeue() {
             assert(size_ > 0);
             auto a = std::move(array_[0]);
-            remove_at(0);
+            Shift(0);
+            size_--;
+            length_--;
             return a;
         }
 
@@ -232,6 +248,9 @@ namespace array {
 
         ~ArrayList() {
             std::cout << "ArrayList" << std::endl;
+            for (int i = 0; i < size_; i++) {
+                array_[i].~T();
+            }
             ::operator delete(array_);
         }
     };

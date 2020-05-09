@@ -134,6 +134,42 @@ void test5() {
     assert(list3.length() == list1.length());
 }
 
+void test6() {
+    int trigger = 6;
+    struct A {
+        int *a_;
+        explicit A(int *a) : a_(a) {}
+        ~A() { (*a_)--; }
+    };
+    {
+        array::ArrayList<A> v(4);
+        v.append(A(&trigger));
+        v.append(A(&trigger));
+        v.append(A(&trigger));
+        v.remove_all();
+        assert(trigger == 0);
+    }
+    assert(trigger == 0);
+}
+
+void test7() {
+    int trigger = 6;
+    struct A {
+        int *a_;
+        explicit A(int *a) : a_(a) {}
+        ~A() { (*a_)--; }
+    };
+    {
+        array::ArrayList<A> v(4);
+        v.append(A(&trigger));
+        v.append(A(&trigger));
+        v.append(A(&trigger));
+        v.remove_at(1);
+        assert(trigger == 2);
+    }
+    assert(trigger == 0);
+}
+
 int main() {
     std::cout << "=============================" << std::endl;
     test1();
@@ -145,6 +181,10 @@ int main() {
     test4();
     std::cout << "=============================" << std::endl;
     test5();
+    std::cout << "=============================" << std::endl;
+    test6();
+    std::cout << "=============================" << std::endl;
+    test7();
     std::cout << "=============================" << std::endl;
     return 0;
 }
