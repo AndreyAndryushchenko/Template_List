@@ -82,7 +82,7 @@ namespace array {
             }
         }
 
-        ArrayList<T>(ArrayList<T> &&arr) {
+        ArrayList<T>(ArrayList<T> &&arr) noexcept {
             capacity_ = arr.capacity_;
             size_ = arr.size_;
             length_ = arr.length_;
@@ -93,7 +93,7 @@ namespace array {
             arr.array_ = static_cast<T*>(::operator new(sizeof(T) * arr.capacity_));
         }
 
-        ArrayList<T> &operator=(ArrayList<T> &&arr) {
+        ArrayList<T> &operator=(ArrayList<T> &&arr) noexcept {
             if (this != &arr) {
                 capacity_ = arr.capacity_;
                 size_ = arr.size_;
@@ -189,7 +189,7 @@ namespace array {
             size_--;
             length_--;
             if (size_ != 0) {
-                if (capacity_ / size_ ==4) { MicroMemory(); }
+                if (capacity_ / size_ >= 4) { MicroMemory(); }
             }
             array_[index].~T();
             Shift(index);
@@ -212,6 +212,7 @@ namespace array {
             length_--;
             auto a = std::move(array_[size_]);
             Shift(size_);
+            if (capacity_ / size_ >= 4) { MicroMemory(); }
             return a;
         }
 
@@ -221,10 +222,11 @@ namespace array {
             Shift(0);
             size_--;
             length_--;
+            if (capacity_ / size_ >= 4) { MicroMemory(); }
             return a;
         }
 
-        int length() {
+        [[nodiscard]] int length() const {
             return size_;
         }
 
@@ -238,11 +240,11 @@ namespace array {
             return array_[index];
         }
 
-        T *begin() {
+        T *begin() const {
             return array_;
         }
 
-        T *end() {
+        T *end() const {
             return array_ + size_;
         }
 
