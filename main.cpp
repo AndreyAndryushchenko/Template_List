@@ -1,6 +1,8 @@
 #include "ArrayList.hpp"
 #include "LinkedList.hpp"
 #include <memory>
+//#include <gtest/gtest.h>
+
 
 void test1() {
     array::ArrayList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -170,7 +172,9 @@ void test7() {
     assert(trigger == 0);
 }
 
-int main() {
+int main(int argc, char** argv) {
+//    ::testing::InitGoogleTest(&argc, argv);
+//    return RUN_ALL_TESTS();
     std::cout << "=============================" << std::endl;
     test1();
     std::cout << "=============================" << std::endl;
@@ -186,5 +190,4 @@ int main() {
     std::cout << "=============================" << std::endl;
     test7();
     std::cout << "=============================" << std::endl;
-    return 0;
 }
