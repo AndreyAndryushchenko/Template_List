@@ -1,3 +1,0 @@
-project(Template_list)
-
-FILE(GLOB_RECURSE SOURCES_LIST ${PROJECT_SOURCE_DIR}/*.hpp ${PROJECT_SOURCE_DIR}/*.cpp)
