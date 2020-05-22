@@ -1,36 +1,34 @@
-#include "ArrayList.hpp"
-#include "LinkedList.hpp"
-#include <memory>
-//#include <gtest/gtest.h>
+#include "../include/ArrayList.hpp"
+#include "../include/LinkedList.hpp"
+#include <gtest/gtest.h>
 
-
-void test1() {
+TEST(ArrayList, test_with_copy_type) {
     array::ArrayList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     array::ArrayList<int> list2;
     array::ArrayList<int> list3 = array::ArrayList<int>(5);
-    assert(0 == list2.length());
+    ASSERT_EQ(0, list2.length());
     list2.append(1);
     list2.append(25);
     list3.append(10);
-    assert(1 == list3.length());
+    ASSERT_EQ(1, list3.length());
     list2.prepend(100);
-    assert(100 == list2[0]);
+    ASSERT_EQ(100, list2[0]);
     list3.append(1000);
     list3.insert_at(0, 0);
-    assert(0 == list3[1]);
-    assert(1000 == list3.pop());
-    assert(100 == list2.dequeue());
+    ASSERT_EQ(0, list3[1]);
+    ASSERT_EQ(1000, list3.pop());
+    ASSERT_EQ(100, list2.dequeue());
     list2.remove_at(0);
-    assert(25 == list2[0]);
+    ASSERT_EQ(25, list2[0]);
     list3.remove_all();
-    assert(0 == list3.length());
+    ASSERT_EQ(0, list3.length());
     list3.append(30);
     list3.append(90);
     list2.append_all(list3);
     list1.append_all(list2);
-    assert(12 == list1.length());
-    assert(3 == list2.length());
-    assert(30 == list2[1]);
+    ASSERT_EQ(12, list1.length());
+    ASSERT_EQ(3, list2.length());
+    ASSERT_EQ(30, list2[1]);
     for (auto& el: list1) {
         std::cout << el << " ";
     }
@@ -42,7 +40,7 @@ void test1() {
     std::cout << std::endl;
 }
 
-void test2() {
+TEST(ArrayList, test_copy_list) {
     array::ArrayList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     array::ArrayList<int> list2 = list1;
     assert(list2.pop() == list1.pop());
@@ -53,7 +51,7 @@ void test2() {
     assert(list3.length() == list1.length());
 }
 
-void test3() {
+TEST(ArrayList, test_with_uncopy_type_and_move_list) {
     array::ArrayList<std::unique_ptr<int>> v;
     assert(v.length() == 0);
     v.append(std::make_unique<int>(42));
@@ -86,7 +84,43 @@ void test3() {
     assert(*v2.at(0).get() == 25);
 }
 
-void test4() {
+TEST(ArrayList, testing_remove_all) {
+    int trigger = 6;
+    struct A {
+        int *a_;
+        explicit A(int *a) : a_(a) {}
+        ~A() { (*a_)--; }
+    };
+    {
+        array::ArrayList<A> v(4);
+        v.append(A(&trigger));
+        v.append(A(&trigger));
+        v.append(A(&trigger));
+        v.remove_all();
+        assert(trigger == 0);
+    }
+    assert(trigger == 0);
+}
+
+TEST(ArrayList, testing_remove_at) {
+    int trigger = 6;
+    struct A {
+        int *a_;
+        explicit A(int *a) : a_(a) {}
+        ~A() { (*a_)--; }
+    };
+    {
+        array::ArrayList<A> v(4);
+        v.append(A(&trigger));
+        v.append(A(&trigger));
+        v.append(A(&trigger));
+        v.remove_at(1);
+        assert(trigger == 2);
+    }
+    assert(trigger == 0);
+}
+
+TEST(LinkedList, testing_with_copy_type) {
     linked::LinkedList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     linked::LinkedList<int> list2;
     linked::LinkedList<int> list3;
@@ -125,7 +159,7 @@ void test4() {
     std::cout << std::endl;
 }
 
-void test5() {
+TEST(LinkedList, testing_copy_list) {
     linked::LinkedList<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     linked::LinkedList<int> list2 = list1;
     assert(list2.pop() == list1.pop());
@@ -134,60 +168,4 @@ void test5() {
     list3 = list1;
     assert(list3.pop() == list1.pop());
     assert(list3.length() == list1.length());
-}
-
-void test6() {
-    int trigger = 6;
-    struct A {
-        int *a_;
-        explicit A(int *a) : a_(a) {}
-        ~A() { (*a_)--; }
-    };
-    {
-        array::ArrayList<A> v(4);
-        v.append(A(&trigger));
-        v.append(A(&trigger));
-        v.append(A(&trigger));
-        v.remove_all();
-        assert(trigger == 0);
-    }
-    assert(trigger == 0);
-}
-
-void test7() {
-    int trigger = 6;
-    struct A {
-        int *a_;
-        explicit A(int *a) : a_(a) {}
-        ~A() { (*a_)--; }
-    };
-    {
-        array::ArrayList<A> v(4);
-        v.append(A(&trigger));
-        v.append(A(&trigger));
-        v.append(A(&trigger));
-        v.remove_at(1);
-        assert(trigger == 2);
-    }
-    assert(trigger == 0);
-}
-
-int main(int argc, char** argv) {
-//    ::testing::InitGoogleTest(&argc, argv);
-//    return RUN_ALL_TESTS();
-    std::cout << "=============================" << std::endl;
-    test1();
-    std::cout << "=============================" << std::endl;
-    test2();
-    std::cout << "=============================" << std::endl;
-    test3();
-    std::cout << "=============================" << std::endl;
-    test4();
-    std::cout << "=============================" << std::endl;
-    test5();
-    std::cout << "=============================" << std::endl;
-    test6();
-    std::cout << "=============================" << std::endl;
-    test7();
-    std::cout << "=============================" << std::endl;
 }
