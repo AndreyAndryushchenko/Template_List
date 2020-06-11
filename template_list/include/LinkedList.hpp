@@ -8,10 +8,13 @@ struct Node {
     T value_;
     struct Node<T>* next_;
 public:
-    explicit Node(T value, Node<T>* next) : value_(value), next_(next) {}
+    explicit Node() {}
     ~Node() {
         std::cout << "~Node" << std::endl;
-        delete next_;
+        if (next_ != nullptr) {
+            next_->~Node<T>();
+            ::operator delete(next_);
+        }
     }
 };
 
@@ -61,23 +64,62 @@ namespace linked {
         LinkedList(const LinkedList<T> &list) {
             head_ = nullptr;
             for (int i = 0; i < list.length(); i++) {
-                append(list.at(i));
+                append(list[i]);
             }
         }
 
         LinkedList<T> &operator=(const LinkedList<T> &list) {
             if (this != &list) {
-                delete head_;
+                if (head_ != nullptr) {
+                    head_->~Node<T>();
+                    ::operator delete(head_);
+                }
                 head_ = nullptr;
                 for (int i = 0; i < list.length(); i++) {
-                    append(list.at(i));
+                    append(list[i]);
                 }
             }
             return *this;
         }
 
+        LinkedList(LinkedList<T> &&list) noexcept {
+            head_ = std::move(list.head_);
+            tail_ = std::move(list.tail_);
+            list.head_ = nullptr;
+            list.tail_ = nullptr;
+        }
+
+        LinkedList<T> &operator=(LinkedList &&list) noexcept {
+            if (this != &list) {
+                if (head_ != nullptr) {
+                    head_->~Node<T>();
+                    ::operator delete(head_);
+                }
+                head_ = std::move(list.head_);
+                tail_ = std::move(list.tail_);
+                list.head_ = nullptr;
+                list.tail_ = nullptr;
+            }
+            return *this;
+        }
+
         void append(const T& value) {
-            Node<T> *new_node = new Node<T>(value, nullptr);
+            auto new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            new_node->value_ = value;
+            new_node->next_ =nullptr;
+            if (head_ == nullptr) {
+                head_ = new_node;
+                tail_ = new_node;
+            } else {
+                tail_->next_ = new_node;
+                tail_ = new_node;
+            }
+        }
+
+        void append(T&& value) {
+            auto new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            ::new(new_node) T(std::move(value));
+            new_node->next_ =nullptr;
             if (head_ == nullptr) {
                 head_ = new_node;
                 tail_ = new_node;
@@ -88,7 +130,22 @@ namespace linked {
         }
 
         void prepend(const T& value) {
-            Node<T> *new_node = new Node<T>(value, nullptr);
+            auto new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            new_node->value_ = value;
+            new_node->next_ =nullptr;
+            if (head_ == nullptr) {
+                head_ = new_node;
+                tail_ = new_node;
+            } else {
+                new_node->next_ = head_;
+                head_ = new_node;
+            }
+        }
+
+        void prepend(T&& value) {
+            auto new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            ::new(new_node) T(std::move(value));
+            new_node->next_ =nullptr;
             if (head_ == nullptr) {
                 head_ = new_node;
                 tail_ = new_node;
@@ -100,9 +157,11 @@ namespace linked {
 
         void append_all(const LinkedList<T>& list) {
             for (int i = 0; i < list.length(); i++) {
-                append(list.at(i));
+                append(list[i]);
             }
         }
+
+        void append_all(LinkedList<T>&& list) = delete;
 
         void insert_at(int index, const T& value) {
             assert(index >= 0 && index < length());
@@ -112,7 +171,29 @@ namespace linked {
                 ptr = ptr->next_;
                 c++;
             }
-            Node<T> *new_node = new Node<T>(value, ptr->next_);
+            auto new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            new_node->value_ = value;
+            new_node->next_ = ptr->next_;
+            if (index == length()-1) {
+                tail_ = new_node;
+            }
+            ptr->next_ = new_node;
+        }
+
+        void insert_at(int index, T&& value) {
+            assert(index >= 0 && index < length());
+            int c = 0;
+            Node<T> *ptr = head_;
+            while (c != index) {
+                ptr = ptr->next_;
+                c++;
+            }
+            auto new_node = static_cast<Node<T>*>(::operator new(sizeof(Node<T>)));
+            ::new(new_node) T(std::move(value));
+            new_node->next_ = ptr->next_;
+            if (index == length()-1) {
+                tail_ = new_node;
+            }
             ptr->next_ = new_node;
         }
 
@@ -133,11 +214,13 @@ namespace linked {
             }
             ptr->next_ = cmp->next_;
             cmp->next_ = nullptr;
-            delete cmp;
+            cmp->~Node<T>();
+            ::operator delete(cmp);
         }
 
         void remove_all() {
-            delete head_;
+            head_->~Node<T>();
+            ::operator delete(head_);
             head_ = nullptr;
             tail_ = nullptr;
         }
@@ -149,8 +232,9 @@ namespace linked {
                 ptr = ptr->next_;
             }
             tail_->next_ = nullptr;
-            auto a = ptr->value_;
-            delete ptr;
+            auto a = std::move(ptr->value_);
+            ptr->~Node<T>();
+            ::operator delete(ptr);
             return a;
         }
 
@@ -158,8 +242,9 @@ namespace linked {
             Node<T> *cmp = head_;
             head_ = head_->next_;
             cmp->next_ = nullptr;
-            auto a = cmp->value_;
-            delete cmp;
+            auto a = std::move(cmp->value_);
+            cmp->~Node<T>();
+            ::operator delete(cmp);
             return a;
         }
 
@@ -184,7 +269,7 @@ namespace linked {
             return cmp->value_;
         }
 
-        const T& at(int index) const {
+        const T &operator[](int index) const {
             assert(index >= 0 && index < length());
             int c = 0;
             Node<T> *cmp = head_;
@@ -205,7 +290,10 @@ namespace linked {
 
         ~LinkedList() {
             std::cout << "~LinkedList" << std::endl;
-            delete head_;
+            if (head_ != nullptr) {
+                head_->~Node<T>();
+                ::operator delete(head_);
+            }
         }
     };
 }
